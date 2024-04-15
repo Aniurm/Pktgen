@@ -42,11 +42,11 @@ function getLatency(a)
 
     -- Start traffic
     pktgen.start(a.sendport)
-    startTime = os.time()
+    local startTime = os.time()
 
     for i = 1, a.iterations, 1 do
         pktgen.sleep(a.sleeptime)
-        t1 = os.difftime(os.time(), startTime)
+        local t1 = os.difftime(os.time(), startTime)
 
         port_stats = pktgen.pktStats(a.recvport);
         num_lat_pkts = port_stats[tonumber(a.recvport)].latency.num_pkts
@@ -61,11 +61,13 @@ function getLatency(a)
         mbits_rx = pktgen.portStats(a.recvport, "rate")[tonumber(a.recvport)].mbits_rx
         mbits_tx = pktgen.portStats(a.sendport, "rate")[tonumber(a.sendport)].mbits_tx
 
-        local output = string.format("%4d %8d %14d %14d %14d %12.2f %12.2f %12.2f %6d %6d %8d\n",
-                                     t1, num_lat_pkts, min_cycles, avg_cycles, max_cycles,
-                                     min_us, avg_us, max_us, mbits_rx, mbits_tx, num_skipped)
-        print(output)
     end
+    print("Packet size: " .. a.pktsize)
+    local output = string.format("%4d %8d %14d %14d %14d %12.2f %12.2f %12.2f %6d %6d %8d\n",
+                                    t1, num_lat_pkts, min_cycles, avg_cycles, max_cycles,
+                                    min_us, avg_us, max_us, mbits_rx, mbits_tx, num_skipped)
+    print(output)
+
     pktgen.stop(a.sendport)
 
     pktgen.latency(a.sendport, "disable");
@@ -84,13 +86,18 @@ print("Latency Samples\n")
 print(header)
 pktgen.sleep(2)
 
-min_latency = getLatency{
-    sendport=0,
-    recvport=0,
-    rate=0.0001,
-    pktsize=64,
-    sleeptime=2,
-    iterations=12
-}
+local pkt_sizes = {64, 128, 256, 512, 1024} -- Add other packet sizes as needed
+
+for _, size in ipairs(pkt_sizes) do
+    print("Testing packet size: ", size)
+    local min_latency = getLatency{
+        sendport=0,
+        recvport=0,
+        rate=0.0001,
+        pktsize=size,
+        sleeptime=2,
+        iterations=12
+    }
+end
 
 print("Done")
