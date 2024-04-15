@@ -4,7 +4,7 @@
 
 package.path = package.path ..";?.lua;test/?.lua;app/?.lua;../?.lua"
 
-require "Pktgen";
+-- require "Pktgen";
 
 default_pktsize = 64
 default_sleeptime = 10
@@ -61,9 +61,10 @@ function getLatency(a)
         mbits_rx = pktgen.portStats(a.recvport, "rate")[tonumber(a.recvport)].mbits_rx
         mbits_tx = pktgen.portStats(a.sendport, "rate")[tonumber(a.sendport)].mbits_tx
 
-        printf("%4d %8d %14d %14d %14d %12.2f %12.2f %12.2f %6d %6d %8d\n", t1, num_lat_pkts,
-            min_cycles, avg_cycles, max_cycles,
-            min_us, avg_us, max_us, mbits_rx, mbits_tx, num_skipped)
+        local output = string.format("%4d %8d %14d %14d %14d %12.2f %12.2f %12.2f %6d %6d %8d\n",
+                                     t1, num_lat_pkts, min_cycles, avg_cycles, max_cycles,
+                                     min_us, avg_us, max_us, mbits_rx, mbits_tx, num_skipped)
+        print(output)
     end
     pktgen.stop(a.sendport)
 
@@ -76,17 +77,18 @@ end
 -- pktgen.page("latency")
 pktgen.screen("off")
 
-printf("Latency Samples\n")
-printf("%4s %8s %14s %14s %14s %12s %12s %12s %6s %6s %8s\n", "time", "nbPkts",
-    "minCycles", "avgCycles", "maxCycles",
-    "min_us", "avg_us", "max_us", "RxMB", "TxMB", "Skipped")
+local header = string.format("%4s %8s %14s %14s %14s %12s %12s %12s %6s %6s %8s\n",
+                             "time", "nbPkts", "minCycles", "avgCycles", "maxCycles",
+                             "min_us", "avg_us", "max_us", "RxMB", "TxMB", "Skipped")
+print("Latency Samples\n")
+print(header)
 pktgen.sleep(2)
 
 min_latency = getLatency{
     sendport=0,
     recvport=0,
-    rate=0.1,
-    pktsize=128,
+    rate=0.0001,
+    pktsize=64,
     sleeptime=2,
     iterations=12
 }
