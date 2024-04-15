@@ -29,6 +29,7 @@ function getLatency(a)
     pktgen.set(a.sendport, "count", 0)
     pktgen.set(a.sendport, "rate", a.rate)
     pktgen.set(a.sendport, "size", a.pktsize)
+    pktgen.set(a.sendport, "burst", 1)
 
     -- enable latency
     pktgen.latency(a.sendport, "enable");
