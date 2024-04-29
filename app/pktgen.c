@@ -99,8 +99,9 @@ pktgen_packet_rate(port_info_t *info)
     uint64_t pps       = (((lk / wire_size) * info->tx_rate) / 100);
 
     info->tx_pps    = pps;
-    info->tx_cycles = (pktgen.hz * info->tx_burst * get_port_txcnt(pktgen.l2p, info->pid)) /
-                      ((pps > 0) ? pps : 1);
+    // info->tx_cycles = (pktgen.hz * info->tx_burst * get_port_txcnt(pktgen.l2p, info->pid)) /
+    //                   ((pps > 0) ? pps : 1);
+    info->tx_cycles = 12000000;
 }
 
 /**
